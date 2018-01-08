@@ -49,7 +49,7 @@
             app:fButtonColor="@color/btnSignUp"
             app:cornerRadius="4dp"
             app:shadowEnabled="true"
-            app:shadowHeight="5dp" />
+            app:shadowHeight="2dp" />
 
         <info.hoang8f.widget.FButton
             android:id="@+id/btnSignIn"
@@ -63,7 +63,7 @@
             app:fButtonColor="@color/btnSignActive"
             app:cornerRadius="4dp"
             app:shadowEnabled="true"
-            app:shadowHeight="5dp" />
+            app:shadowHeight="2dp" />
 
 
     </LinearLayout>

@@ -64,6 +64,6 @@
         app:cornerRadius="4dp"
         app:fButtonColor="@color/btnSignActive"
         app:shadowEnabled="true"
-        app:shadowHeight="5dp" />
+        app:shadowHeight="2dp" />
 
 </RelativeLayout>
