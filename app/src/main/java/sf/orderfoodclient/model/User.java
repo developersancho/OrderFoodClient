@@ -1,4 +1,4 @@
-package sf.orderfoodclient;
+package sf.orderfoodclient.model;
 
 /**
  * Created by mesutgenc on 8.01.2018.

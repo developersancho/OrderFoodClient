@@ -1,14 +1,14 @@
-package sf.orderfoodclient;
+package sf.orderfoodclient.activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import info.hoang8f.widget.FButton;
+import sf.orderfoodclient.R;
 
 public class MainActivity extends AppCompatActivity {
 
