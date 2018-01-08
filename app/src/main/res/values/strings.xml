@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OrderFoodClient</string>
+    <string name="slogan">Lorem Ipsum, dizgi ve baskı endüstrisinde kullanılan mıgır metinlerdir.</string>
 </resources>
