@@ -24,7 +24,8 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".activity.FoodListActivity" />
         <activity android:name=".activity.FoodDetailActivity" />
-        <activity android:name=".activity.CartActivity"></activity>
+        <activity android:name=".activity.CartActivity" />
+        <activity android:name=".activity.OrderStatusActivity"></activity>
     </application>
 
 </manifest>

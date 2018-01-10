@@ -153,11 +153,16 @@ public class HomeActivity extends AppCompatActivity
         if (id == R.id.nav_menu) {
 
         } else if (id == R.id.nav_cart) {
-
+            Intent cartIntent = new Intent(HomeActivity.this, CartActivity.class);
+            startActivity(cartIntent);
         } else if (id == R.id.nav_orders) {
-
+            Intent orderIntent = new Intent(HomeActivity.this, OrderStatusActivity.class);
+            startActivity(orderIntent);
         } else if (id == R.id.nav_log_out) {
             FirebaseAuth.getInstance().signOut();
+            Intent signInIntent = new Intent(HomeActivity.this, SignInActivity.class);
+            signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(signInIntent);
             finish();
         }
 

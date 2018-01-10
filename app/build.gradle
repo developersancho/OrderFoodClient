@@ -38,10 +38,13 @@ dependencies {
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:1.2.0'
     implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
-    //
+    // sqlite and textdrawable
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    // material searchbar
+    implementation 'com.github.mancj:MaterialSearchBar:0.7.5'
 }
+
 
 
 
