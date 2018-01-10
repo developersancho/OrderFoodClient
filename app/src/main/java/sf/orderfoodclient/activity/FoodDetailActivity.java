@@ -4,8 +4,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.google.firebase.database.DataSnapshot;
@@ -16,7 +18,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import sf.orderfoodclient.R;
+import sf.orderfoodclient.database.Database;
 import sf.orderfoodclient.model.Food;
+import sf.orderfoodclient.model.Order;
 
 public class FoodDetailActivity extends AppCompatActivity {
 
@@ -29,6 +33,7 @@ public class FoodDetailActivity extends AppCompatActivity {
     String foodId = "";
     FirebaseDatabase database;
     DatabaseReference foods;
+    Food currentFood;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +52,27 @@ public class FoodDetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
         btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
+        btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Database(FoodDetailActivity.this).addToCart(new Order(
+                        foodId,
+                        currentFood.getName(),
+                        btnNumber.getNumber(),
+                        currentFood.getPrice(),
+                        currentFood.getDiscount()
+                ));
+
+                Toast.makeText(FoodDetailActivity.this, "Added to Cart", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         btnNumber = (ElegantNumberButton) findViewById(R.id.btnNumber);
 
         if (getIntent() != null)
             foodId = getIntent().getStringExtra("FoodId");
 
-        if (!foodId.isEmpty()){
+        if (!foodId.isEmpty()) {
             getDetailFood(foodId);
         }
 
@@ -62,16 +82,17 @@ public class FoodDetailActivity extends AppCompatActivity {
         foods.child(foodId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Food food = dataSnapshot.getValue(Food.class);
+                currentFood = dataSnapshot.getValue(Food.class);
 
-                Picasso.with(getBaseContext()).load(food.getImage())
+                Picasso.with(getBaseContext())
+                        .load(currentFood.getImage())
                         .into(img_food);
 
-                collapsingToolbarLayout.setTitle(food.getName());
+                collapsingToolbarLayout.setTitle(currentFood.getName());
 
-                txtFoodName.setText(food.getName());
-                txtFoodDescription.setText(food.getDescription());
-                txtFoodPrice.setText(food.getPrice());
+                txtFoodName.setText(currentFood.getName());
+                txtFoodDescription.setText(currentFood.getDescription());
+                txtFoodPrice.setText(currentFood.getPrice());
 
 
             }
