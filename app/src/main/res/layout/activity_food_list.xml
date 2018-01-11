@@ -8,11 +8,12 @@
 
     <com.mancj.materialsearchbar.MaterialSearchBar
         android:id="@+id/searchBar"
-        app:mt_speechMode="false"
-        app:mt_hint="Enter your food"
+        style="@style/MaterialSearchBarLight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        app:mt_hint="Enter your food"
+        app:mt_speechMode="false" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_food"
