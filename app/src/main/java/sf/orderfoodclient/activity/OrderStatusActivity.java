@@ -42,7 +42,13 @@ public class OrderStatusActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        loadOrders(Common.currentUser.getPhone());
+        // if we start OrderStatus activity from Home Activity
+        // we will not put any extra, so we just loadOrder by phone from Common
+        if (getIntent() == null) {
+            loadOrders(Common.currentUser.getPhone());
+        } else {
+            loadOrders(getIntent().getStringExtra("userPhone"));
+        }
 
     }
 
@@ -56,7 +62,7 @@ public class OrderStatusActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(OrderViewHolder viewHolder, Request model, int position) {
                 viewHolder.order_id.setText(adapter.getRef(position).getKey());
-                viewHolder.order_status.setText(convertCodeToStatus(model.getStatus()));
+                viewHolder.order_status.setText(Common.convertCodeToStatus(model.getStatus()));
                 viewHolder.order_phone.setText(model.getPhone());
                 viewHolder.order_address.setText(model.getAddress());
 
@@ -73,12 +79,5 @@ public class OrderStatusActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private String convertCodeToStatus(String status) {
-        if (status.equals("0"))
-            return "Placed";
-        else if (status.equals("1"))
-            return "On my way";
-        else
-            return "Shipped";
-    }
+
 }

@@ -29,6 +29,7 @@ import sf.orderfoodclient.helper.MenuViewHolder;
 import sf.orderfoodclient.R;
 import sf.orderfoodclient.common.Common;
 import sf.orderfoodclient.model.Category;
+import sf.orderfoodclient.service.ListenOrderService;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -82,6 +83,10 @@ public class HomeActivity extends AppCompatActivity
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
         loadMenu();
+
+        // register service
+        Intent service = new Intent(HomeActivity.this, ListenOrderService.class);
+        startService(service);
     }
 
     private void loadMenu() {
