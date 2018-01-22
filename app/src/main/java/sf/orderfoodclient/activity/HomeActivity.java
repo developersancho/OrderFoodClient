@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import io.paperdb.Paper;
 import sf.orderfoodclient.helper.ItemClickListener;
 import sf.orderfoodclient.helper.MenuViewHolder;
 import sf.orderfoodclient.R;
@@ -53,6 +54,9 @@ public class HomeActivity extends AppCompatActivity
         // Init Firebase
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
+
+        // init Paper
+        Paper.init(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -142,8 +146,8 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.refresh) {
+            loadMenu();
         }
 
         return super.onOptionsItemSelected(item);
@@ -164,6 +168,9 @@ public class HomeActivity extends AppCompatActivity
             Intent orderIntent = new Intent(HomeActivity.this, OrderStatusActivity.class);
             startActivity(orderIntent);
         } else if (id == R.id.nav_log_out) {
+            // Delete Remember user & password
+            Paper.book().destroy();
+
             FirebaseAuth.getInstance().signOut();
             Intent signInIntent = new Intent(HomeActivity.this, SignInActivity.class);
             signInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

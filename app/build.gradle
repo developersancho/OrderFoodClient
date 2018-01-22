@@ -43,6 +43,9 @@ dependencies {
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     // material searchbar
     implementation 'com.github.mancj:MaterialSearchBar:0.7.5'
+    // Remember Login
+    implementation 'io.paperdb:paperdb:2.1'
+    implementation 'com.github.rey5137:material:1.2.4'
 }
 
 

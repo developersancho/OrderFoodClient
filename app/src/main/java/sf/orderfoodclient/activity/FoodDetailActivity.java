@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import sf.orderfoodclient.R;
+import sf.orderfoodclient.common.Common;
 import sf.orderfoodclient.database.Database;
 import sf.orderfoodclient.model.Food;
 import sf.orderfoodclient.model.Order;
