@@ -21,7 +21,7 @@ import sf.orderfoodclient.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    MaterialEditText edtPhone, edtPassword, edtName;
+    MaterialEditText edtPhone, edtPassword, edtName, edtSecureCode;
     FButton btnSignUp;
     FirebaseDatabase database;
     DatabaseReference tableUser;
@@ -34,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity {
         edtPhone = (MaterialEditText) findViewById(R.id.edtPhone);
         edtName = (MaterialEditText) findViewById(R.id.edtName);
         edtPassword = (MaterialEditText) findViewById(R.id.edtPassword);
+        edtSecureCode = (MaterialEditText) findViewById(R.id.edtSecureCode);
         btnSignUp = (FButton) findViewById(R.id.btnSignUp);
 
         database = FirebaseDatabase.getInstance();
@@ -56,7 +57,9 @@ public class SignUpActivity extends AppCompatActivity {
                                 Snackbar.make(findViewById(R.id.signUpLayout), "Phone Number Already Registered", Snackbar.LENGTH_SHORT).show();
                             } else {
                                 mDialog.dismiss();
-                                User user = new User(edtName.getText().toString(), edtPassword.getText().toString());
+                                User user = new User(edtName.getText().toString(),
+                                        edtPassword.getText().toString(),
+                                        edtSecureCode.getText().toString());
                                 tableUser.child(edtPhone.getText().toString()).setValue(user);
                                 Snackbar.make(findViewById(R.id.signUpLayout), "Sign Up Success", Snackbar.LENGTH_SHORT).show();
                                 finish();

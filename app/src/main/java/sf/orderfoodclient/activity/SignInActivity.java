@@ -1,10 +1,13 @@
 package sf.orderfoodclient.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.widget.CheckBox;
+import com.rey.material.widget.TextView;
 
 import info.hoang8f.widget.FButton;
 import io.paperdb.Paper;
@@ -29,6 +33,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference tableUser;
     CheckBox ckbRemember;
+    TextView txtForgotPwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,7 @@ public class SignInActivity extends AppCompatActivity {
         edtPassword = (MaterialEditText) findViewById(R.id.edtPassword);
         btnSignIn = (FButton) findViewById(R.id.btnSignIn);
         ckbRemember = (CheckBox) findViewById(R.id.ckbRemember);
+        txtForgotPwd = (TextView) findViewById(R.id.txtForgotPwd);
 
         // init Paper
         Paper.init(this);
@@ -95,5 +101,58 @@ public class SignInActivity extends AppCompatActivity {
 
         });
 
+        txtForgotPwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showForgotPwdDialog();
+            }
+        });
+
+    }
+
+    private void showForgotPwdDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Forgot Password");
+        builder.setMessage("Enter your secure code");
+
+        LayoutInflater inFlater = this.getLayoutInflater();
+        View forgot_view = inFlater.inflate(R.layout.dialog_forgot_password, null);
+        builder.setView(forgot_view);
+        builder.setIcon(R.drawable.ic_security_black_24dp);
+
+        final MaterialEditText edtPhone = (MaterialEditText) forgot_view.findViewById(R.id.edtPhone);
+        final MaterialEditText edtSecureCode = (MaterialEditText) forgot_view.findViewById(R.id.edtSecureCode);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // check if user available
+                tableUser.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
+                        if (user.getSecureCode().equals(edtSecureCode.getText().toString())) {
+                            Toast.makeText(SignInActivity.this, "Your password : " + user.getPassword(), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(SignInActivity.this, "Wrong secure code !!!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.show();
     }
 }
