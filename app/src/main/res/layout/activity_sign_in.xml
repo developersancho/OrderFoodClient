@@ -91,7 +91,8 @@
         android:text="Sign In"
         android:textColor="@android:color/white"
         app:cornerRadius="4dp"
-        app:fButtonColor="@color/btnSignActive"
+        app:fButtonColor="#FF9900"
+        app:shadowColor="@android:color/black"
         app:shadowEnabled="true"
         app:shadowHeight="2dp" />
 

@@ -5,8 +5,8 @@
     <!--#25728C , #354b60 -->
     <color name="colorAccent">#F29509</color>
 
-    <color name="btnSignUp">#39796b</color>
-    <color name="btnSignActive">#A9d440</color>
+    <color name="btnSignUp">#1A771A</color>
+    <color name="btnSignActive">#D50909</color>
 
     <color name="overlayBackground">#7f333639</color>
     <color name="overlayActionBar">#0e0d0e</color>
