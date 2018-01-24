@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import sf.orderfoodclient.model.User;
+import sf.orderfoodclient.remote.APIService;
+import sf.orderfoodclient.remote.RetrofitClient;
 
 /**
  * Created by mesutgenc on 8.01.2018.
@@ -12,6 +14,7 @@ import sf.orderfoodclient.model.User;
 
 public class Common {
     public static User currentUser;
+    private static final String BASE_URL = "https://fcm.googleapis.com/";
 
     public static final String UPDATE = "Update";
     public static final String DELETE = "Delete";
@@ -42,5 +45,8 @@ public class Common {
         return false;
     }
 
+    public static APIService getFCMService() {
+        return RetrofitClient.getClient(BASE_URL).create(APIService.class);
+    }
 
 }

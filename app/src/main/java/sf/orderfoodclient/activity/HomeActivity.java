@@ -3,7 +3,6 @@ package sf.orderfoodclient.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -16,12 +15,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import io.paperdb.Paper;
@@ -30,7 +29,7 @@ import sf.orderfoodclient.helper.MenuViewHolder;
 import sf.orderfoodclient.R;
 import sf.orderfoodclient.common.Common;
 import sf.orderfoodclient.model.Category;
-import sf.orderfoodclient.service.ListenOrderService;
+import sf.orderfoodclient.model.firebase.Token;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,9 +87,15 @@ public class HomeActivity extends AppCompatActivity
         recycler_menu.setLayoutManager(layoutManager);
         loadMenu();
 
-        // register service
-        Intent service = new Intent(HomeActivity.this, ListenOrderService.class);
-        startService(service);
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    private void updateToken(String myToken) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference tokens = db.getReference("FoodTokens");
+        Token data = new Token(myToken, false);
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
     }
 
     private void loadMenu() {
