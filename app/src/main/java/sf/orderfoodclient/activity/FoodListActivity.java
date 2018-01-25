@@ -1,6 +1,7 @@
 package sf.orderfoodclient.activity;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +46,8 @@ public class FoodListActivity extends AppCompatActivity {
     MaterialSearchBar searchBar;
     Database localDB;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,19 +57,46 @@ public class FoodListActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         foodList = database.getReference("Foods");
         localDB = new Database(this);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_home);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (getIntent() != null) {
+                    categoryId = getIntent().getStringExtra("CategoryId");
+                }
+
+                if (!categoryId.isEmpty() && categoryId != null) {
+                    loadFoodListMenu(categoryId);
+                }
+            }
+        });
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (getIntent() != null) {
+                    categoryId = getIntent().getStringExtra("CategoryId");
+                }
+
+                if (!categoryId.isEmpty() && categoryId != null) {
+                    loadFoodListMenu(categoryId);
+                }
+            }
+        });
+
         // Load MENU
         recycler_menu = (RecyclerView) findViewById(R.id.recycler_food);
         recycler_menu.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
 
-        if (getIntent() != null) {
-            categoryId = getIntent().getStringExtra("CategoryId");
-        }
 
-        if (!categoryId.isEmpty() && categoryId != null) {
-            loadFoodListMenu(categoryId);
-        }
 
         // SEARCH
         searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
@@ -213,6 +243,7 @@ public class FoodListActivity extends AppCompatActivity {
         };
 
         recycler_menu.setAdapter(adapter);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
 

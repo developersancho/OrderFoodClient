@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +54,7 @@ public class HomeActivity extends AppCompatActivity
     RecyclerView recycler_menu;
     RecyclerView.LayoutManager layoutManager;
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
-
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,26 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Order Food Menu");
         setSupportActionBar(toolbar);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_home);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadMenu();
+            }
+        });
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                loadMenu();
+            }
+        });
 
         // Init Firebase
         database = FirebaseDatabase.getInstance();
@@ -98,7 +119,7 @@ public class HomeActivity extends AppCompatActivity
         recycler_menu.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
-        loadMenu();
+
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
@@ -136,7 +157,7 @@ public class HomeActivity extends AppCompatActivity
         };
 
         recycler_menu.setAdapter(adapter);
-
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
