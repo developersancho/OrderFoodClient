@@ -58,7 +58,7 @@ public class FoodListActivity extends AppCompatActivity {
         foodList = database.getReference("Foods");
         localDB = new Database(this);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_home);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_food);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
@@ -95,7 +95,6 @@ public class FoodListActivity extends AppCompatActivity {
         recycler_menu.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
-
 
 
         // SEARCH
@@ -208,6 +207,8 @@ public class FoodListActivity extends AppCompatActivity {
                 Picasso.with(getBaseContext())
                         .load(model.getImage())
                         .into(viewHolder.food_image);
+
+                viewHolder.food_price.setText(String.format("$ %s", model.getPrice().toString()));
 
                 // add favorites
                 if (localDB.isFavorite(adapter.getRef(position).getKey())) {

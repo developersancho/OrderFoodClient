@@ -1,5 +1,6 @@
 package sf.orderfoodclient.activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,8 @@ import sf.orderfoodclient.model.firebase.MyResponse;
 import sf.orderfoodclient.model.firebase.Notification;
 import sf.orderfoodclient.model.firebase.Sender;
 import sf.orderfoodclient.remote.APIService;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -61,6 +64,13 @@ public class CartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // set font
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/restaurant_font.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
+
         setContentView(R.layout.activity_cart);
 
         database = FirebaseDatabase.getInstance();
@@ -86,6 +96,11 @@ public class CartActivity extends AppCompatActivity {
         });
 
         loadListFood();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void showAlertDialog() {

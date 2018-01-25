@@ -1,6 +1,7 @@
 package sf.orderfoodclient.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,8 @@ import io.paperdb.Paper;
 import sf.orderfoodclient.R;
 import sf.orderfoodclient.common.Common;
 import sf.orderfoodclient.model.User;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // set font
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/restaurant_font.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_main);
 
         btnSignIn = (FButton) findViewById(R.id.btnSignIn);
@@ -67,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void login(final String phone, final String pwd) {
