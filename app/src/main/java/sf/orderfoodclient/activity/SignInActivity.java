@@ -65,7 +65,7 @@ public class SignInActivity extends AppCompatActivity {
                     mDialog.setMessage("Loading...");
                     mDialog.show();
 
-                    tableUser.addValueEventListener(new ValueEventListener() {
+                    tableUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -77,6 +77,7 @@ public class SignInActivity extends AppCompatActivity {
                                     Common.currentUser = user;
                                     startActivity(homeIntent);
                                     finish();
+                                    tableUser.removeEventListener(this);
                                 } else {
                                     mDialog.dismiss();
                                     Snackbar.make(findViewById(R.id.signInLayout), "Failed", Snackbar.LENGTH_SHORT).show();
