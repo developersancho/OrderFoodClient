@@ -1,5 +1,7 @@
 package sf.orderfoodclient.activity;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,8 @@ import android.widget.Toast;
 
 import com.andremion.counterfab.CounterFab;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+import info.hoang8f.widget.FButton;
 import sf.orderfoodclient.R;
 import sf.orderfoodclient.common.Common;
 import sf.orderfoodclient.database.Database;
@@ -48,6 +53,8 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
     DatabaseReference foods;
     DatabaseReference ratingTbl;
     Food currentFood;
+
+    FButton btnShowComent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +103,16 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
         btnCart.setCount(new Database(this).getCountCart());
 
         btnNumber = (ElegantNumberButton) findViewById(R.id.btnNumber);
+
+        btnShowComent = (FButton) findViewById(R.id.btnShowComment);
+        btnShowComent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FoodDetailActivity.this, ShowCommentActivity.class);
+                intent.putExtra(Common.INTENT_FOOD_ID, foodId);
+                startActivity(intent);
+            }
+        });
 
         if (getIntent() != null)
             foodId = getIntent().getStringExtra("FoodId");
@@ -188,7 +205,16 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
                 String.valueOf(value),
                 comments);
 
-        ratingTbl.child(Common.currentUser.getPhone()).addValueEventListener(new ValueEventListener() {
+        ratingTbl.push()
+                .setValue(rating)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(FoodDetailActivity.this, "Thanks for submit rating !!!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        /*ratingTbl.child(Common.currentUser.getPhone()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(Common.currentUser.getPhone()).exists()) {
@@ -207,7 +233,7 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
     }
 
     @Override

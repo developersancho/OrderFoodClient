@@ -7,11 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +70,7 @@ public class CartActivity extends AppCompatActivity {
     APIService mService;
 
     Place shippingAddress;
+    String address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +124,7 @@ public class CartActivity extends AppCompatActivity {
         View order_address_comment = inflater.inflate(R.layout.order_address_comment, null);
 
         //final MaterialEditText edtAddress = (MaterialEditText) order_address_comment.findViewById(R.id.edtAddress);
-        PlaceAutocompleteFragment edtAddress = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        final PlaceAutocompleteFragment edtAddress = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         // hide search icon
         edtAddress.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
         // set hint for autocomplete edit text
@@ -144,15 +148,76 @@ public class CartActivity extends AppCompatActivity {
         });
 
         final MaterialEditText edtComment = (MaterialEditText) order_address_comment.findViewById(R.id.edtComment);
+        final RadioButton rdBtnShipToAddress = (RadioButton) order_address_comment.findViewById(R.id.rdBtnShipToAddress);
+        final RadioButton rdBtnHomeAddress = (RadioButton) order_address_comment.findViewById(R.id.rdBtnHomeAddress);
+
+        rdBtnHomeAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!TextUtils.isEmpty(Common.currentUser.getHomeAddress())
+                            || Common.currentUser.getHomeAddress() != null) {
+                        address = Common.currentUser.getHomeAddress();
+                        // set text size
+                        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
+                                .setText(address);
+                    } else {
+                        Toast.makeText(CartActivity.this, "Please update your home address", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
+                            .setText("");
+                }
+            }
+        });
+
+        rdBtnShipToAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (shippingAddress != null)
+                        address = shippingAddress.getAddress().toString();
+                }
+            }
+        });
+
+
         alertDialog.setView(order_address_comment);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
 
         alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+
+                if (!rdBtnShipToAddress.isChecked() && !rdBtnHomeAddress.isChecked()) {
+                    // if both radio is not selected
+                    if (shippingAddress != null)
+                        address = shippingAddress.getAddress().toString();
+                    else {
+                        Toast.makeText(CartActivity.this, "Please enter address or select option addres", Toast.LENGTH_SHORT).show();
+                        // remove  fragment
+                        getFragmentManager().beginTransaction()
+                                .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
+                                .commit();
+                        return;
+                    }
+                }
+
+                if (!TextUtils.isEmpty(address)) {
+                    Toast.makeText(CartActivity.this, "Please enter address or select option addres", Toast.LENGTH_SHORT).show();
+                    // remove  fragment
+                    getFragmentManager().beginTransaction()
+                            .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
+                            .commit();
+                    return;
+                }
+
+
                 Request request = new Request(
                         Common.currentUser.getPhone(),
                         Common.currentUser.getName(),
-                        shippingAddress.getAddress().toString(),
+                        address,
                         txtTotalPrice.getText().toString(),
                         edtComment.getText().toString(),
                         cart,

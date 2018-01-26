@@ -15,7 +15,8 @@ import sf.orderfoodclient.remote.RetrofitClient;
 public class Common {
     public static User currentUser;
     private static final String BASE_URL = "https://fcm.googleapis.com/";
-    public  static String PHONE_TEXT = "userPhone";
+    public static String PHONE_TEXT = "userPhone";
+    public static final String INTENT_FOOD_ID = "FoodId";
 
     public static final String UPDATE = "Update";
     public static final String DELETE = "Delete";
