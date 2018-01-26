@@ -85,7 +85,8 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
                         currentFood.getName(),
                         btnNumber.getNumber(),
                         currentFood.getPrice(),
-                        currentFood.getDiscount()
+                        currentFood.getDiscount(),
+                        currentFood.getImage()
                 ));
 
                 Toast.makeText(FoodDetailActivity.this, "Added to Cart", Toast.LENGTH_SHORT).show();

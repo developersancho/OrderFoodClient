@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -33,11 +34,13 @@ class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickList
 
     public TextView txt_cart_name, txt_cart_price;
     public ElegantNumberButton btnQuantity;
+    public ImageView cart_image;
 
     private ItemClickListener itemClickListener;
 
     public CartViewHolder(View itemView) {
         super(itemView);
+        cart_image = (ImageView) itemView.findViewById(R.id.cart_image);
         txt_cart_name = (TextView) itemView.findViewById(R.id.cart_item_name);
         txt_cart_price = (TextView) itemView.findViewById(R.id.cart_item_price);
         btnQuantity = (ElegantNumberButton) itemView.findViewById(R.id.btn_quantity);
@@ -82,6 +85,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder> {
                 .buildRound("" + listData.get(position).getQuantity(),
                         Color.RED);
         //holder.img_cart_count.setImageDrawable(drawable);
+
+        Picasso.with(cart.getBaseContext())
+                .load(listData.get(position).getImage())
+                .resize(70, 70)
+                .centerCrop()
+                .into(holder.cart_image);
+
         holder.btnQuantity.setNumber(listData.get(position).getQuantity());
         holder.btnQuantity.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override
