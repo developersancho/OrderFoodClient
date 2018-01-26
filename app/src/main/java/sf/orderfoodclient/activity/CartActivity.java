@@ -11,9 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,6 +65,8 @@ public class CartActivity extends AppCompatActivity {
     CartAdapter adapter;
 
     APIService mService;
+
+    Place shippingAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +119,30 @@ public class CartActivity extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View order_address_comment = inflater.inflate(R.layout.order_address_comment, null);
 
-        final MaterialEditText edtAddress = (MaterialEditText) order_address_comment.findViewById(R.id.edtAddress);
+        //final MaterialEditText edtAddress = (MaterialEditText) order_address_comment.findViewById(R.id.edtAddress);
+        PlaceAutocompleteFragment edtAddress = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        // hide search icon
+        edtAddress.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
+        // set hint for autocomplete edit text
+        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
+                .setHint("Enter your address");
+        // set text size
+        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
+                .setTextSize(14);
+
+        // get address from place autocomplete
+        edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                shippingAddress = place;
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.e("ERROR", status.getStatusMessage());
+            }
+        });
+
         final MaterialEditText edtComment = (MaterialEditText) order_address_comment.findViewById(R.id.edtComment);
         alertDialog.setView(order_address_comment);
 
@@ -122,10 +152,11 @@ public class CartActivity extends AppCompatActivity {
                 Request request = new Request(
                         Common.currentUser.getPhone(),
                         Common.currentUser.getName(),
-                        edtAddress.getText().toString(),
+                        shippingAddress.getAddress().toString(),
                         txtTotalPrice.getText().toString(),
                         edtComment.getText().toString(),
-                        cart
+                        cart,
+                        String.format("%s,%s", shippingAddress.getLatLng().latitude, shippingAddress.getLatLng().longitude)
                 );
 
                 String order_number = String.valueOf(System.currentTimeMillis());
@@ -143,6 +174,10 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                // remove  fragment
+                getFragmentManager().beginTransaction()
+                        .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
+                        .commit();
             }
         });
 

@@ -17,23 +17,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/edtAddress"
+            <fragment
+                android:id="@+id/place_autocomplete_fragment"
+                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Address"
-                android:inputType="text"
-                android:text=""
-                android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorPrimary"
-                android:textSize="34sp"
-                app:met_baseColor="@color/colorPrimary"
-                app:met_floatingLabel="highlight"
-                app:met_primaryColor="@color/colorPrimary"
-                app:met_singleLineEllipsis="true" />
+                android:layout_height="wrap_content" />
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/edtComment"
