@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         btnSignUp = (FButton) findViewById(R.id.btnSignUp);
 
         txtSlogan = (TextView) findViewById(R.id.txtSlogan);
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/pink_gladiolus_one.ttf");
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/nabila.ttf");
         txtSlogan.setTypeface(typeface);
 
         // init Paper

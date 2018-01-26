@@ -1,6 +1,7 @@
 package sf.orderfoodclient.activity;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,15 +9,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.squareup.picasso.Picasso;
@@ -30,6 +35,7 @@ import sf.orderfoodclient.database.Database;
 import sf.orderfoodclient.helper.FoodViewHolder;
 import sf.orderfoodclient.helper.ItemClickListener;
 import sf.orderfoodclient.model.Food;
+import sf.orderfoodclient.model.Order;
 
 public class FoodListActivity extends AppCompatActivity {
 
@@ -147,14 +153,16 @@ public class FoodListActivity extends AppCompatActivity {
     }
 
     private void startSearch(CharSequence text) {
-        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
-                Food.class,
-                R.layout.food_item,
-                FoodViewHolder.class,
-                foodList.orderByChild("name").equalTo(text.toString())) {
 
+        Query searchByName = foodList.orderByChild("name").equalTo(text.toString());
+
+        FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(searchByName, Food.class)
+                .build();
+
+        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @Override
-            protected void populateViewHolder(FoodViewHolder viewHolder, Food model, int position) {
+            protected void onBindViewHolder(@NonNull FoodViewHolder viewHolder, int position, @NonNull Food model) {
                 viewHolder.food_name.setText(model.getName());
                 Picasso.with(getBaseContext())
                         .load(model.getImage())
@@ -169,10 +177,17 @@ public class FoodListActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+            }
 
+            @Override
+            public FoodViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item, parent, false);
+                return new FoodViewHolder(itemView);
             }
         };
         // set adapter for recycler view is search result
+        searchAdapter.startListening();
         recycler_menu.setAdapter(searchAdapter);
     }
 
@@ -195,14 +210,17 @@ public class FoodListActivity extends AppCompatActivity {
     }
 
     private void loadFoodListMenu(String categoryId) {
-        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
-                Food.class,
-                R.layout.food_item,
-                FoodViewHolder.class,
-                foodList.orderByChild("menuId").equalTo(categoryId)) {
 
+        Query searchByCategoryId = foodList.orderByChild("menuId").equalTo(categoryId);
+
+        FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(searchByCategoryId, Food.class)
+                .build();
+
+
+        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @Override
-            protected void populateViewHolder(final FoodViewHolder viewHolder, final Food model, final int position) {
+            protected void onBindViewHolder(@NonNull final FoodViewHolder viewHolder, final int position, @NonNull final Food model) {
                 viewHolder.food_name.setText(model.getName());
                 Picasso.with(getBaseContext())
                         .load(model.getImage())
@@ -230,6 +248,21 @@ public class FoodListActivity extends AppCompatActivity {
                     }
                 });
 
+                viewHolder.btn_quick_cart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Database(FoodListActivity.this).addToCart(new Order(
+                                adapter.getRef(position).getKey(),
+                                model.getName(),
+                                "1",
+                                model.getPrice(),
+                                model.getDiscount()
+                        ));
+
+                        Toast.makeText(FoodListActivity.this, "Added to Cart", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 final Food clickItem = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
@@ -239,13 +272,34 @@ public class FoodListActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+            }
 
+            @Override
+            public FoodViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item, parent, false);
+                return new FoodViewHolder(itemView);
             }
         };
 
+        adapter.startListening();
         recycler_menu.setAdapter(adapter);
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+        if (searchAdapter != null) {
+            searchAdapter.stopListening();
+        }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null)
+            adapter.startListening();
+    }
 }
