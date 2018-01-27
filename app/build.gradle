@@ -62,6 +62,9 @@ dependencies {
     implementation 'com.github.andremion:counterfab:1.0.1'
     // google play service
     implementation 'com.google.android.gms:play-services-places:11.8.0'
+    // for image slider
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.daimajia.slider:library:1.1.5@aar'
 }
 
 

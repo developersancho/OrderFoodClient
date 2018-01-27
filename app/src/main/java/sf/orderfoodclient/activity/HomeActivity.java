@@ -27,14 +27,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andremion.counterfab.CounterFab;
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
@@ -49,6 +56,7 @@ import sf.orderfoodclient.helper.ItemClickListener;
 import sf.orderfoodclient.helper.MenuViewHolder;
 import sf.orderfoodclient.R;
 import sf.orderfoodclient.common.Common;
+import sf.orderfoodclient.model.Banner;
 import sf.orderfoodclient.model.Category;
 import sf.orderfoodclient.model.firebase.Token;
 
@@ -63,6 +71,10 @@ public class HomeActivity extends AppCompatActivity
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     CounterFab fab;
+
+    // slider
+    HashMap<String, String> image_list;
+    SliderLayout mSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +179,63 @@ public class HomeActivity extends AppCompatActivity
         recycler_menu.setLayoutAnimation(controller);
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
+        // setup slider
+        setupSlider();
+    }
 
+    private void setupSlider() {
+        mSlider = (SliderLayout) findViewById(R.id.slider);
+        image_list = new HashMap<>();
+
+        final DatabaseReference banners = database.getReference("Banner");
+        banners.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
+                    Banner banner = postSnapShot.getValue(Banner.class);
+                    image_list.put(banner.getName() + "_" + banner.getId(), banner.getImage());
+                }
+
+                for (String key : image_list.keySet()) {
+                    String[] keySplit = key.split("_");
+                    String nameOfFood = keySplit[0];
+                    String idOfFood = keySplit[1];
+
+                    // create slider
+                    final TextSliderView textSliderView = new TextSliderView(getBaseContext());
+                    textSliderView.description(nameOfFood)
+                            .image(image_list.get(key))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                                @Override
+                                public void onSliderClick(BaseSliderView slider) {
+                                    Intent intent = new Intent(HomeActivity.this, FoodDetailActivity.class);
+                                    intent.putExtras(textSliderView.getBundle());
+                                    startActivity(intent);
+                                }
+                            });
+                    // add extra bundle
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle().putString("FoodId", idOfFood);
+
+                    mSlider.addSlider(textSliderView);
+
+                    // remove event after finish
+                    banners.removeEventListener(this);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSlider.setCustomAnimation(new DescriptionAnimation());
+        mSlider.setDuration(4000);
     }
 
     private void updateToken(String myToken) {
@@ -193,6 +261,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+        mSlider.stopAutoCycle();
     }
 
     @Override
